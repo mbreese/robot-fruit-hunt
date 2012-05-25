@@ -23,7 +23,11 @@ var MyBot = {
       if (board[x][y] > 0) {
          if (MyBot.is_priority_target(board[x][y])) {
             logger("Taking a priority target");
-            return TAKE;
+            if (MyBot.get_opp_distance(MyBot.target_x, MyBot.target_y) > MyBot.get_distance(MyBot.target_x, MyBot.target_y)) {
+               logger("Opponent further away - taking.");
+               return TAKE;
+            }
+            logger("Skipping to get to the target first.");
          }
          if (MyBot.num_priority_targets() === 0 && board[x][y] > 0) {
             logger("No priority targets left... taking this one anyway");
@@ -139,6 +143,16 @@ var MyBot = {
          }
 
          // items are same type, or types are equally desireable.
+         // sort by the difference in distance between me and opponent
+         var adif = Math.abs(a.distance - a.opp_distance);
+         var bdif = Math.abs(b.distance - b.opp_distance);
+
+         if (adif < bdif) {
+            return -1;
+         } else if (adif > bdif) {
+            return 1;
+         }
+
          // sort by distance to me
 
          if (a.distance < b.distance) {
